@@ -17,6 +17,7 @@ import {
   BrainCircuit,
   Sparkles
 } from 'lucide-react';
+import Showcase from './components/Showcase';
 
 /**
  * TASTELESSMEDIA.AI.STUDIO
@@ -271,6 +272,8 @@ export default function App() {
           ))}
         </div>
       </section>
+
+      <Showcase />
 
       {/* --- Interactive Terminal (CTA) --- */}
       <section id="uplink" className="border-y border-zinc-800 bg-zinc-900 py-24 px-6 md:px-12 relative overflow-hidden">
