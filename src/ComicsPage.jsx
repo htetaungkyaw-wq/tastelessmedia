@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 // Public base URL for the comic assets hosted on R2.
+// Files live at the root of the bucket (see provided public endpoint).
 const R2_BASE = 'https://pub-bf6e2f70f5bb4ea988c32f6edb2780d4.r2.dev';
 
 // Library of comics. Add more objects to this array later.
@@ -9,13 +10,13 @@ const COMICS = [
     slug: 'eyes-in-the-dark',
     title: 'Eyes in the Dark',
     description: 'Rural Myanmar horror one-shot.',
-    cover: `${R2_BASE}/comic/eyes-in-the-dark/cover.png`,
+    cover: `${R2_BASE}/cover.png`,
     pages: [
-      `${R2_BASE}/comic/eyes-in-the-dark/page-1.png`,
-      `${R2_BASE}/comic/eyes-in-the-dark/page-2.png`,
-      `${R2_BASE}/comic/eyes-in-the-dark/page-3.png`,
-      `${R2_BASE}/comic/eyes-in-the-dark/page-4.png`,
-      `${R2_BASE}/comic/eyes-in-the-dark/page-5.png`,
+      `${R2_BASE}/page-1.png`,
+      `${R2_BASE}/page-2.png`,
+      `${R2_BASE}/page-3.png`,
+      `${R2_BASE}/page-4.png`,
+      `${R2_BASE}/page-5.png`,
     ],
   },
 ];
