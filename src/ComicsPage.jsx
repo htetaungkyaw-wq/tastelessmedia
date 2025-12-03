@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
 // Public base URL for the comic assets hosted on R2.
-const R2_BASE = 'https://28ba011021de8a0ede51c1b1813c4c05.r2.cloudflarestorage.com';
+const R2_BASE = 'https://pub-bf6e2f70f5bb4ea988c32f6edb2780d4.r2.dev';
 
 // Library of comics. Add more objects to this array later.
 const COMICS = [
