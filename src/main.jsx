@@ -20,11 +20,11 @@ const Root = () => {
     }
   };
 
-  if (path === '/comics') {
+  if (path === '/comic') {
     return <ComicsPage onNavigateHome={() => navigate('/')} />;
   }
 
-  return <App onNavigateToComics={() => navigate('/comics')} />;
+  return <App onNavigateToComics={() => navigate('/comic')} />;
 };
 
 ReactDOM.createRoot(document.getElementById('root')).render(

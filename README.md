@@ -35,7 +35,7 @@ The optimized assets will be emitted to `dist/`. Preview them locally with `npm 
 
 ### Comics exchange routing
 
-- The `/comics` view is bundled as part of the single-page application. The `public/_redirects` file ensures that deep links such as `/comics` resolve to `index.html` on Pages, letting the client-side router hydrate the comics catalog.
+- The `/comic` view is bundled as part of the single-page application. The `public/_redirects` file ensures that deep links such as `/comic` resolve to `index.html` on Pages, letting the client-side router hydrate the comics catalog.
 - Comic cards reference Cloudflare Images delivery paths (e.g., `https://imagedelivery.net/YOUR_ACCOUNT_HASH/<image-id>/public`). Swap in your own account hash and asset identifiers to stream covers directly from Cloudflare.
 
 Each commit will now automatically produce a production build on Cloudflare's global edge.
