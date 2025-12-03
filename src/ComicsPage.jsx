@@ -1,162 +1,291 @@
-import React from 'react';
-import { ArrowLeft, ArrowUpRight, BookOpen, Cloud } from 'lucide-react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 
-const comics = [
+// Replace this with your actual R2 public base URL.
+// Example: "https://pub-xxxxxxxxxxxxxxxxxxxxxxxx.r2.dev"
+const R2_BASE = 'https://YOUR_R2_PUBLIC_HOST';
+
+// Library of comics. Add more objects to this array later.
+const COMICS = [
   {
-    title: 'NEON WASTELAND',
-    issue: 'Issue 01',
-    summary: 'A synth-samurai defends the last analog archive in a city powered by corrupted AIs.',
-    genres: ['Cyberpunk', 'Action', 'Cloudflare Images'],
-    cloudflarePath: 'demo/neon-wasteland',
-    accent: 'from-lime-400/30 via-fuchsia-400/20 to-amber-400/10',
-  },
-  {
-    title: 'ORBITAL MYTHOS',
-    issue: 'Issue 02',
-    summary: 'Ancient gods are reborn as satellites while renegade scientists race to keep humanity grounded.',
-    genres: ['Sci-Fi', 'Mythology', 'Edge Network'],
-    cloudflarePath: 'demo/orbital-mythos',
-    accent: 'from-cyan-400/30 via-indigo-400/20 to-slate-400/20',
-  },
-  {
-    title: 'GARDENS OF STATIC',
-    issue: 'Issue 03',
-    summary: 'A horticulturist hacks signal noise to grow impossible flora in a datacenter ruin.',
-    genres: ['Solarpunk', 'Mystery', 'R2 Ready'],
-    cloudflarePath: 'demo/gardens-of-static',
-    accent: 'from-emerald-400/30 via-lime-300/20 to-white/10',
-  },
-  {
-    title: 'SPECTRUM RUNNERS',
-    issue: 'Issue 04',
-    summary: 'Street racers bend light to outrun surveillance drones across quantum tunnels.',
-    genres: ['Thriller', 'Lightfield', 'Zero-Downtime'],
-    cloudflarePath: 'demo/spectrum-runners',
-    accent: 'from-orange-400/30 via-rose-300/20 to-purple-400/15',
+    slug: 'eyes-in-the-dark',
+    title: 'Eyes in the Dark',
+    description: 'Rural Myanmar horror one-shot.',
+    cover: `${R2_BASE}/comic/eyes-in-the-dark/cover.png`,
+    pages: [
+      `${R2_BASE}/comic/eyes-in-the-dark/page-1.png`,
+      `${R2_BASE}/comic/eyes-in-the-dark/page-2.png`,
+      `${R2_BASE}/comic/eyes-in-the-dark/page-3.png`,
+      `${R2_BASE}/comic/eyes-in-the-dark/page-4.png`,
+      `${R2_BASE}/comic/eyes-in-the-dark/page-5.png`,
+    ],
   },
 ];
 
+const parseHash = () => {
+  const raw = window.location.hash.slice(1);
+  if (!raw) {
+    return { route: 'home', params: new URLSearchParams() };
+  }
+  const [route, query] = raw.split('?');
+  const params = new URLSearchParams(query || '');
+  return { route: route || 'home', params };
+};
+
+const getComicBySlug = (slug) => COMICS.find((c) => c.slug === slug) || null;
+
 const ComicsPage = ({ onNavigateHome }) => {
-  const cloudflareDeliveryBase = 'https://imagedelivery.net/YOUR_ACCOUNT_HASH';
+  const [route, setRoute] = useState(parseHash());
+  const [currentPageIndex, setCurrentPageIndex] = useState(0);
+  const pageRefs = useRef([]);
+  const observerRef = useRef(null);
+
+  const currentSlug = useMemo(
+    () => (route.route === 'reader' ? route.params.get('slug') : null),
+    [route],
+  );
+
+  const currentComic = useMemo(() => getComicBySlug(currentSlug), [currentSlug]);
+
+  const goHome = () => {
+    window.location.hash = '#home';
+    setCurrentPageIndex(0);
+  };
+
+  const goReader = (slug) => {
+    window.location.hash = `#reader?slug=${encodeURIComponent(slug)}`;
+  };
+
+  const scrollToPage = (index) => {
+    const pages = pageRefs.current.filter(Boolean);
+    if (!pages.length) return;
+    const clampedIndex = Math.min(Math.max(index, 0), pages.length - 1);
+    pages[clampedIndex].scrollIntoView({ behavior: 'smooth', block: 'start' });
+    setCurrentPageIndex(clampedIndex);
+  };
+
+  useEffect(() => {
+    const handleHash = () => setRoute(parseHash());
+    handleHash();
+    window.addEventListener('hashchange', handleHash);
+    return () => window.removeEventListener('hashchange', handleHash);
+  }, []);
+
+  useEffect(() => {
+    pageRefs.current = [];
+    observerRef.current?.disconnect();
+
+    if (route.route === 'reader' && currentComic) {
+      document.title = `${currentComic.title} – Reader`;
+    } else {
+      document.title = 'Tasteless Media Comics';
+    }
+
+    setCurrentPageIndex(0);
+    return () => observerRef.current?.disconnect();
+  }, [route, currentComic]);
+
+  useEffect(() => {
+    if (route.route !== 'reader' || !currentComic) return undefined;
+
+    const pages = pageRefs.current.filter(Boolean);
+    if (!pages.length) return undefined;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const idx = Number(entry.target.dataset.index || '0');
+            setCurrentPageIndex(idx);
+          }
+        });
+      },
+      {
+        root: null,
+        threshold: 0.55,
+      },
+    );
+
+    observerRef.current = observer;
+    pages.forEach((img) => observer.observe(img));
+
+    pages[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+    return () => observer.disconnect();
+  }, [route, currentComic]);
+
+  const pageIndicatorText = currentComic?.pages?.length
+    ? `${currentPageIndex + 1} / ${currentComic.pages.length}`
+    : '';
 
   return (
-    <div className="bg-zinc-950 min-h-screen text-zinc-100">
-      <header className="border-b border-zinc-800 sticky top-0 bg-zinc-950/80 backdrop-blur-md z-20">
-        <div className="max-w-6xl mx-auto flex justify-between items-center px-6 py-4">
-          <div className="flex items-center gap-3">
-            <div className="w-2 h-2 rounded-full bg-lime-400 animate-pulse"></div>
-            <div>
-              <p className="text-xs font-mono uppercase tracking-[0.2em] text-zinc-500">Tasteless Comics // Cloudflare Ready</p>
-              <p className="text-lg font-bold text-white">TASTELESS<span className="text-lime-400">MEDIA</span></p>
+    <div className="bg-white text-slate-900 min-h-screen">
+      <div className="min-h-screen flex flex-col">
+        <header className="w-full border-b border-slate-200 bg-white/90 backdrop-blur z-20 sticky top-0">
+          <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <h1 className="text-lg font-semibold tracking-tight">Tasteless Media Comics</h1>
+              {onNavigateHome && (
+                <button
+                  type="button"
+                  onClick={onNavigateHome}
+                  className="hidden sm:inline-flex text-xs text-slate-500 hover:text-slate-900 transition"
+                >
+                  Back to studio
+                </button>
+              )}
             </div>
-          </div>
-          <div className="flex items-center gap-3">
-            <a
-              className="hidden md:inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-lime-400 border border-lime-400/30 px-3 py-2 hover:bg-lime-400 hover:text-black transition-colors"
-              href="https://developers.cloudflare.com/pages" target="_blank" rel="noreferrer"
-            >
-              Cloudflare Pages <ArrowUpRight className="w-3 h-3" />
-            </a>
             <button
-              onClick={onNavigateHome}
-              className="flex items-center gap-2 text-xs font-mono uppercase tracking-widest border border-zinc-700 px-3 py-2 hover:border-lime-400 hover:text-lime-400 transition-colors"
+              id="homeNavButton"
+              className="text-sm text-slate-500 hover:text-slate-900 transition"
+              type="button"
+              onClick={goHome}
             >
-              <ArrowLeft className="w-4 h-4" /> Back to Studio
+              All comics
             </button>
           </div>
-        </div>
-      </header>
+        </header>
 
-      <main className="max-w-6xl mx-auto px-6 py-12 space-y-12">
-        <div className="grid md:grid-cols-[2fr,1fr] gap-12 items-start">
-          <div>
-            <p className="font-mono text-xs uppercase tracking-widest text-zinc-500 mb-3">Cloudflare native</p>
-            <h1 className="text-4xl md:text-6xl font-black tracking-tight text-white mb-6">COMIC EXCHANGE</h1>
-            <p className="text-lg text-zinc-400 max-w-2xl leading-relaxed">
-              A dedicated landing zone for sequential art hosted on Cloudflare infrastructure. Each issue references a
-              Cloudflare Images delivery path, making it simple to swap in real assets once your account is wired up. When
-              deployed to Cloudflare Pages, this view resolves instantly with global caching.
-            </p>
-            <div className="mt-8 grid sm:grid-cols-3 gap-4 text-xs font-mono uppercase tracking-widest text-zinc-500">
-              <div className="border border-zinc-800 p-4 rounded-md bg-zinc-900/40">
-                <p className="text-white mb-1">SPA routing</p>
-                <p>/_redirects ready for /comics path</p>
+        <main className="flex-1">
+          {route.route !== 'reader' && (
+            <section id="homeView" className="max-w-4xl mx-auto px-4 py-6">
+              <h2 className="text-xl font-semibold mb-4">Library</h2>
+              <div id="comicGrid" className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                {COMICS.map((comic) => (
+                  <article
+                    key={comic.slug}
+                    className="group cursor-pointer rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow flex flex-col"
+                    onClick={() => goReader(comic.slug)}
+                  >
+                    <img
+                      src={comic.cover}
+                      alt={`${comic.title} cover`}
+                      loading="lazy"
+                      className="w-full aspect-[3/4] object-cover bg-slate-100 group-hover:scale-[1.01] transition-transform"
+                    />
+                    <div className="p-3 flex flex-col gap-2 flex-1">
+                      <h3 className="text-sm font-semibold line-clamp-1">{comic.title}</h3>
+                      <p className="text-xs text-slate-600 line-clamp-2">{comic.description}</p>
+                      <div className="mt-auto pt-2 flex justify-between items-center">
+                        <span className="text-[11px] text-slate-500">{comic.pages.length} pages</span>
+                        <button
+                          type="button"
+                          className="px-3 py-1.5 rounded-full bg-slate-900 text-white text-xs font-medium hover:bg-slate-800"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            goReader(comic.slug);
+                          }}
+                        >
+                          Read
+                        </button>
+                      </div>
+                    </div>
+                  </article>
+                ))}
               </div>
-              <div className="border border-zinc-800 p-4 rounded-md bg-zinc-900/40">
-                <p className="text-white mb-1">Images</p>
-                <p>Swap YOUR_ACCOUNT_HASH to stream covers</p>
-              </div>
-              <div className="border border-zinc-800 p-4 rounded-md bg-zinc-900/40">
-                <p className="text-white mb-1">Zero config</p>
-                <p>Works with npm run build on Pages</p>
-              </div>
-            </div>
-          </div>
-          <div className="border border-zinc-800 bg-zinc-900/50 rounded-lg p-6 space-y-4">
-            <div className="flex items-center gap-3 text-lime-400">
-              <Cloud className="w-5 h-5" />
-              <p className="font-mono text-xs uppercase tracking-widest">Cloudflare delivery hints</p>
-            </div>
-            <ul className="text-sm text-zinc-400 space-y-2 list-disc list-inside">
-              <li>Publish covers to Cloudflare Images or R2 and expose via <span className="text-white">{cloudflareDeliveryBase}/&lt;image-id&gt;/public</span>.</li>
-              <li>Update the <span className="text-white">cloudflarePath</span> values below to match your asset identifiers.</li>
-              <li>Because this is a single-page app, the included <code className="bg-zinc-800 px-1 rounded">/_redirects</code> file keeps deep links like <code className="bg-zinc-800 px-1 rounded">/comics</code> online on Pages.</li>
-            </ul>
-          </div>
-        </div>
+            </section>
+          )}
 
-        <section className="space-y-6">
-          <div className="flex items-center gap-3">
-            <BookOpen className="w-6 h-6 text-lime-400" />
-            <h2 className="text-2xl md:text-3xl font-bold text-white">Choose your comic</h2>
-          </div>
-          <div className="grid md:grid-cols-2 gap-6">
-            {comics.map((comic) => (
-              <article
-                key={comic.title}
-                className="relative border border-zinc-800 bg-zinc-900/60 hover:border-lime-400/40 transition-colors overflow-hidden group"
-              >
-                <div className={`absolute inset-0 bg-gradient-to-br ${comic.accent} opacity-60 group-hover:opacity-90 transition-opacity`}></div>
-                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-40 mix-blend-overlay"></div>
-                <div className="relative p-6 space-y-4">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <p className="font-mono text-xs uppercase tracking-[0.2em] text-zinc-200">{comic.issue}</p>
-                      <h3 className="text-3xl font-black text-white tracking-tight">{comic.title}</h3>
-                    </div>
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-lime-300 border border-lime-300/40 px-2 py-1 rounded-full bg-lime-400/10">
-                      Cloudflare ready
-                    </span>
-                  </div>
-                  <p className="text-zinc-200 leading-relaxed">{comic.summary}</p>
-                  <div className="flex flex-wrap gap-2">
-                    {comic.genres.map((genre) => (
-                      <span
-                        key={genre}
-                        className="text-[10px] font-mono uppercase tracking-widest text-zinc-200 border border-zinc-700/70 px-2 py-1 rounded-sm bg-zinc-950/40"
-                      >
-                        {genre}
-                      </span>
-                    ))}
-                  </div>
-                  <div className="flex justify-between items-center pt-2">
-                    <div className="text-xs text-zinc-300 font-mono">
-                      <p>Image Path</p>
-                      <p className="text-lime-300">{cloudflareDeliveryBase}/{comic.cloudflarePath}/public</p>
-                    </div>
-                    <a
-                      href={`https://pages.dev/comics/${comic.cloudflarePath}`}
-                      className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-black bg-lime-400 px-3 py-2 hover:bg-white transition-colors"
-                    >
-                      View delivery <ArrowUpRight className="w-3 h-3" />
-                    </a>
-                  </div>
+          {route.route === 'reader' && (
+            <section id="readerView" className="max-w-4xl mx-auto px-4 py-6">
+              <div className="flex items-center justify-between gap-2 mb-3">
+                <div className="flex items-center gap-3">
+                  <button
+                    id="readerBackButton"
+                    className="inline-flex items-center gap-1 text-sm text-slate-600 hover:text-slate-900"
+                    type="button"
+                    onClick={goHome}
+                  >
+                    <span className="text-lg leading-none">&larr;</span>
+                    <span>Back to library</span>
+                  </button>
                 </div>
-              </article>
-            ))}
-          </div>
-        </section>
-      </main>
+                <div id="pageIndicator" className="text-xs font-medium text-slate-500">
+                  {pageIndicatorText}
+                </div>
+              </div>
+
+              <h2 id="readerTitle" className="text-xl font-semibold mb-3">
+                {currentComic ? currentComic.title : 'Comic not found'}
+              </h2>
+              <p id="readerDescription" className="text-sm text-slate-600 mb-4">
+                {currentComic?.description || ''}
+              </p>
+
+              <div id="pagesContainer" className="flex flex-col items-center gap-4 pb-16">
+                {currentComic?.pages.map((src, index) => (
+                  <div key={src} className="w-full flex justify-center">
+                    <img
+                      src={src}
+                      alt={`${currentComic.title} – Page ${index + 1}`}
+                      loading="lazy"
+                      className="w-full max-w-[640px] rounded-xl shadow-sm bg-slate-100 object-contain"
+                      data-index={index}
+                      ref={(el) => {
+                        pageRefs.current[index] = el;
+                      }}
+                    />
+                  </div>
+                ))}
+              </div>
+
+              <div
+                id="readerControlsDesktop"
+                className="hidden md:flex flex-col gap-2 fixed right-4 top-1/2 -translate-y-1/2 z-30"
+              >
+                <button
+                  id="btnPrevDesktop"
+                  className="px-3 py-2 rounded-xl shadow border bg-white text-xs hover:bg-slate-50"
+                  type="button"
+                  onClick={() => scrollToPage(currentPageIndex - 1)}
+                >
+                  Prev
+                </button>
+                <button
+                  id="btnNextDesktop"
+                  className="px-3 py-2 rounded-xl shadow border bg-white text-xs hover:bg-slate-50"
+                  type="button"
+                  onClick={() => scrollToPage(currentPageIndex + 1)}
+                >
+                  Next
+                </button>
+                <button
+                  id="btnTopDesktop"
+                  className="px-3 py-2 rounded-xl shadow border bg-white text-xs hover:bg-slate-50"
+                  type="button"
+                  onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
+                >
+                  Top
+                </button>
+              </div>
+
+              <div
+                id="readerControlsMobile"
+                className="fixed inset-x-0 bottom-0 md:hidden bg-white/95 backdrop-blur border-t border-slate-200 flex items-center justify-between px-4 py-2 z-30"
+              >
+                <button
+                  id="btnPrevMobile"
+                  className="px-3 py-2 rounded-lg border text-xs text-slate-700"
+                  type="button"
+                  onClick={() => scrollToPage(currentPageIndex - 1)}
+                >
+                  Prev
+                </button>
+                <div id="pageIndicatorMobile" className="text-xs font-medium text-slate-500">
+                  {pageIndicatorText}
+                </div>
+                <button
+                  id="btnNextMobile"
+                  className="px-3 py-2 rounded-lg border text-xs text-slate-700"
+                  type="button"
+                  onClick={() => scrollToPage(currentPageIndex + 1)}
+                >
+                  Next
+                </button>
+              </div>
+            </section>
+          )}
+        </main>
+      </div>
     </div>
   );
 };
