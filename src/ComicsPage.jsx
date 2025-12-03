@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { ArrowLeft, ArrowUp, BookOpen, Home, PanelsTopLeft } from 'lucide-react';
 
 // Public base URL for the comic assets hosted on R2.
 // Files live at the root of the bucket (see provided public endpoint).
@@ -118,64 +119,88 @@ const ComicsPage = ({ onNavigateHome }) => {
     : '';
 
   return (
-    <div className="bg-white text-slate-900 min-h-screen">
-      <div className="min-h-screen flex flex-col">
-        <header className="w-full border-b border-slate-200 bg-white/90 backdrop-blur z-20 sticky top-0">
-          <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
-            <div className="flex items-center gap-4">
-              <h1 className="text-lg font-semibold tracking-tight">Tasteless Media Comics</h1>
+    <div className="bg-zinc-950 text-zinc-100 min-h-screen selection:bg-lime-400 selection:text-black">
+      <div className="min-h-screen flex flex-col relative overflow-hidden">
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute inset-0 opacity-10" style={{
+            backgroundImage: 'linear-gradient(rgba(255,255,255,0.06) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.06) 1px, transparent 1px)',
+            backgroundSize: '40px 40px',
+          }}></div>
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,#4ade8033,transparent_25%),radial-gradient(circle_at_80%_0%,#22d3ee22,transparent_25%)]" />
+        </div>
+
+        <header className="w-full border-b border-zinc-800 bg-zinc-950/80 backdrop-blur z-30 sticky top-0">
+          <div className="max-w-6xl mx-auto px-4 md:px-8 py-4 flex items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="h-10 w-10 rounded-lg border border-zinc-800 bg-zinc-900 flex items-center justify-center shadow-inner shadow-lime-400/10">
+                <PanelsTopLeft className="w-5 h-5 text-lime-400" />
+              </div>
+              <div>
+                <p className="font-mono text-[11px] uppercase tracking-[0.2em] text-zinc-500">Tastelessmedia.ai</p>
+                <h1 className="text-xl font-bold tracking-tight text-white">Sequential Lab</h1>
+              </div>
               {onNavigateHome && (
                 <button
                   type="button"
                   onClick={onNavigateHome}
-                  className="hidden sm:inline-flex text-xs text-slate-500 hover:text-slate-900 transition"
+                  className="hidden sm:inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.2em] text-zinc-500 hover:text-lime-400 transition"
                 >
-                  Back to studio
+                  <Home className="w-4 h-4" /> Back to studio
                 </button>
               )}
             </div>
             <button
               id="homeNavButton"
-              className="text-sm text-slate-500 hover:text-slate-900 transition"
+              className="inline-flex items-center gap-2 px-4 py-2 border border-zinc-800 rounded-lg bg-zinc-900 text-[12px] font-semibold tracking-wide hover:border-lime-400 hover:text-lime-400 transition"
               type="button"
               onClick={goHome}
             >
-              All comics
+              <BookOpen className="w-4 h-4" /> Library
             </button>
           </div>
         </header>
 
-        <main className="flex-1">
+        <main className="flex-1 relative">
           {route.route !== 'reader' && (
-            <section id="homeView" className="max-w-4xl mx-auto px-4 py-6">
-              <h2 className="text-xl font-semibold mb-4">Library</h2>
-              <div id="comicGrid" className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+            <section id="homeView" className="max-w-6xl mx-auto px-4 md:px-8 py-10 space-y-6">
+              <div className="flex flex-col gap-3">
+                <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-lime-400">/ Comics exchange</p>
+                <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white">Experiments in sequential art.</h2>
+                <p className="text-zinc-400 max-w-3xl">Readings delivered directly from the R2 vault, tuned for the same technical brutalism as the studio homepage.</p>
+              </div>
+
+              <div id="comicGrid" className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
                 {COMICS.map((comic) => (
                   <article
                     key={comic.slug}
-                    className="group cursor-pointer rounded-2xl border border-slate-200 overflow-hidden bg-white shadow-sm hover:shadow-md transition-shadow flex flex-col"
+                    className="group cursor-pointer rounded-2xl border border-zinc-800 bg-gradient-to-br from-zinc-950 via-zinc-900 to-zinc-950 overflow-hidden shadow-[0_0_0_1px_#18181b,0_20px_50px_-30px_rgba(0,0,0,0.8)] hover:border-lime-400/50 transition-all duration-300 flex flex-col"
                     onClick={() => goReader(comic.slug)}
                   >
-                    <img
-                      src={comic.cover}
-                      alt={`${comic.title} cover`}
-                      loading="lazy"
-                      className="w-full aspect-[3/4] object-cover bg-slate-100 group-hover:scale-[1.01] transition-transform"
-                    />
-                    <div className="p-3 flex flex-col gap-2 flex-1">
-                      <h3 className="text-sm font-semibold line-clamp-1">{comic.title}</h3>
-                      <p className="text-xs text-slate-600 line-clamp-2">{comic.description}</p>
+                    <div className="relative overflow-hidden">
+                      <div className="absolute inset-0 bg-gradient-to-t from-zinc-950/60 to-transparent opacity-70"></div>
+                      <img
+                        src={comic.cover}
+                        alt={`${comic.title} cover`}
+                        loading="lazy"
+                        className="w-full aspect-[3/4] object-cover bg-zinc-900 group-hover:scale-[1.02] transition-transform duration-500"
+                      />
+                      <div className="absolute top-4 right-4 px-3 py-1 rounded-full border border-zinc-800 bg-black/60 text-[11px] font-mono uppercase tracking-[0.2em] text-lime-300 shadow-lg">{comic.pages.length} pages</div>
+                    </div>
+
+                    <div className="p-4 flex flex-col gap-3 flex-1">
+                      <h3 className="text-lg font-semibold text-white tracking-tight group-hover:text-lime-300 transition-colors">{comic.title}</h3>
+                      <p className="text-sm text-zinc-400 line-clamp-3 font-mono">{comic.description}</p>
                       <div className="mt-auto pt-2 flex justify-between items-center">
-                        <span className="text-[11px] text-slate-500">{comic.pages.length} pages</span>
+                        <span className="text-[11px] font-mono uppercase tracking-[0.2em] text-zinc-500">R2 Asset • {comic.slug}</span>
                         <button
                           type="button"
-                          className="px-3 py-1.5 rounded-full bg-slate-900 text-white text-xs font-medium hover:bg-slate-800"
+                          className="px-4 py-2 rounded-md border border-lime-400/60 bg-lime-400/10 text-xs font-semibold tracking-wide text-lime-300 hover:bg-lime-400/20 transition"
                           onClick={(e) => {
                             e.stopPropagation();
                             goReader(comic.slug);
                           }}
                         >
-                          Read
+                          Launch
                         </button>
                       </div>
                     </div>
@@ -186,63 +211,73 @@ const ComicsPage = ({ onNavigateHome }) => {
           )}
 
           {route.route === 'reader' && (
-            <section id="readerView" className="max-w-4xl mx-auto px-4 py-6">
-              <div className="flex items-center justify-between gap-2 mb-3">
+            <section id="readerView" className="max-w-6xl mx-auto px-4 md:px-8 py-10">
+              <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <button
                     id="readerBackButton"
-                    className="inline-flex items-center gap-1 text-sm text-slate-600 hover:text-slate-900"
+                    className="inline-flex items-center gap-2 text-sm font-semibold text-zinc-200 border border-zinc-800 px-3 py-2 rounded-md bg-zinc-900 hover:border-lime-400 hover:text-lime-300 transition"
                     type="button"
                     onClick={goHome}
                   >
-                    <span className="text-lg leading-none">&larr;</span>
-                    <span>Back to library</span>
+                    <ArrowLeft className="w-4 h-4" /> Library
                   </button>
+                  <span className="hidden md:inline-flex items-center gap-2 text-[11px] font-mono uppercase tracking-[0.25em] text-zinc-500">
+                    <PanelsTopLeft className="w-4 h-4" /> R2 Vault
+                  </span>
                 </div>
-                <div id="pageIndicator" className="text-xs font-medium text-slate-500">
+                <div id="pageIndicator" className="text-xs font-mono uppercase tracking-[0.2em] text-lime-300">
                   {pageIndicatorText}
                 </div>
               </div>
 
-              <h2 id="readerTitle" className="text-xl font-semibold mb-3">
-                {currentComic ? currentComic.title : 'Comic not found'}
-              </h2>
-              <p id="readerDescription" className="text-sm text-slate-600 mb-4">
-                {currentComic?.description || ''}
-              </p>
-
-              <div id="pagesContainer" className="flex flex-col items-center gap-4 pb-16">
-                {currentComic?.pages.map((src, index) => (
-                  <div key={src} className="w-full flex justify-center">
-                    <img
-                      src={src}
-                      alt={`${currentComic.title} – Page ${index + 1}`}
-                      loading="lazy"
-                      className="w-full max-w-[640px] rounded-xl shadow-sm bg-slate-100 object-contain"
-                      data-index={index}
-                      ref={(el) => {
-                        pageRefs.current[index] = el;
-                      }}
-                    />
+              <div className="rounded-2xl border border-zinc-800 bg-zinc-900/60 p-6 shadow-[0_0_0_1px_#18181b,0_30px_60px_-40px_rgba(0,0,0,0.9)]">
+                <div className="flex items-start justify-between gap-3">
+                  <div>
+                    <p className="font-mono text-[11px] uppercase tracking-[0.25em] text-lime-400">/ Reader</p>
+                    <h2 id="readerTitle" className="text-3xl font-bold tracking-tight text-white">{currentComic ? currentComic.title : 'Comic not found'}</h2>
+                    <p id="readerDescription" className="text-sm text-zinc-400 mt-2 max-w-3xl">{currentComic?.description || ''}</p>
                   </div>
-                ))}
+                  <span className="hidden md:inline-flex px-3 py-1 rounded-full border border-zinc-800 bg-black/60 text-[11px] font-mono uppercase tracking-[0.25em] text-zinc-500">Pages live-observed</span>
+                </div>
+
+                <div id="pagesContainer" className="mt-6 flex flex-col items-center gap-6 pb-16">
+                  {currentComic?.pages.map((src, index) => (
+                    <div key={src} className="w-full flex justify-center">
+                      <div className="relative w-full max-w-[720px] overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950 shadow-xl">
+                        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-zinc-950/40 pointer-events-none"></div>
+                        <img
+                          src={src}
+                          alt={`${currentComic.title} – Page ${index + 1}`}
+                          loading="lazy"
+                          className="w-full object-contain bg-zinc-950"
+                          data-index={index}
+                          ref={(el) => {
+                            pageRefs.current[index] = el;
+                          }}
+                        />
+                        <div className="absolute top-3 left-3 px-3 py-1 rounded-full border border-zinc-800 bg-black/60 text-[10px] font-mono uppercase tracking-[0.25em] text-zinc-400">Pg {index + 1}</div>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
 
               <div
                 id="readerControlsDesktop"
-                className="hidden md:flex flex-col gap-2 fixed right-4 top-1/2 -translate-y-1/2 z-30"
+                className="hidden md:flex flex-col gap-3 fixed right-6 top-1/2 -translate-y-1/2 z-30"
               >
                 <button
                   id="btnPrevDesktop"
-                  className="px-3 py-2 rounded-xl shadow border bg-white text-xs hover:bg-slate-50"
+                  className="px-4 py-2 rounded-lg border border-zinc-800 bg-zinc-950 text-xs font-semibold hover:border-lime-400 hover:text-lime-300 transition"
                   type="button"
                   onClick={() => scrollToPage(currentPageIndex - 1)}
                 >
-                  Prev
+                  Previous
                 </button>
                 <button
                   id="btnNextDesktop"
-                  className="px-3 py-2 rounded-xl shadow border bg-white text-xs hover:bg-slate-50"
+                  className="px-4 py-2 rounded-lg border border-zinc-800 bg-zinc-950 text-xs font-semibold hover:border-lime-400 hover:text-lime-300 transition"
                   type="button"
                   onClick={() => scrollToPage(currentPageIndex + 1)}
                 >
@@ -250,32 +285,32 @@ const ComicsPage = ({ onNavigateHome }) => {
                 </button>
                 <button
                   id="btnTopDesktop"
-                  className="px-3 py-2 rounded-xl shadow border bg-white text-xs hover:bg-slate-50"
+                  className="px-4 py-2 rounded-lg border border-zinc-800 bg-zinc-950 text-xs font-semibold hover:border-lime-400 hover:text-lime-300 transition inline-flex items-center gap-2"
                   type="button"
                   onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
                 >
-                  Top
+                  <ArrowUp className="w-4 h-4" /> Top
                 </button>
               </div>
 
               <div
                 id="readerControlsMobile"
-                className="fixed inset-x-0 bottom-0 md:hidden bg-white/95 backdrop-blur border-t border-slate-200 flex items-center justify-between px-4 py-2 z-30"
+                className="fixed inset-x-0 bottom-0 md:hidden bg-zinc-950/95 backdrop-blur border-t border-zinc-800 flex items-center justify-between px-4 py-3 z-30"
               >
                 <button
                   id="btnPrevMobile"
-                  className="px-3 py-2 rounded-lg border text-xs text-slate-700"
+                  className="px-4 py-2 rounded-lg border border-zinc-800 text-xs font-semibold text-zinc-200 bg-zinc-900 hover:border-lime-400 hover:text-lime-300 transition"
                   type="button"
                   onClick={() => scrollToPage(currentPageIndex - 1)}
                 >
                   Prev
                 </button>
-                <div id="pageIndicatorMobile" className="text-xs font-medium text-slate-500">
+                <div id="pageIndicatorMobile" className="text-xs font-mono uppercase tracking-[0.25em] text-lime-300">
                   {pageIndicatorText}
                 </div>
                 <button
                   id="btnNextMobile"
-                  className="px-3 py-2 rounded-lg border text-xs text-slate-700"
+                  className="px-4 py-2 rounded-lg border border-zinc-800 text-xs font-semibold text-zinc-200 bg-zinc-900 hover:border-lime-400 hover:text-lime-300 transition"
                   type="button"
                   onClick={() => scrollToPage(currentPageIndex + 1)}
                 >
