@@ -97,7 +97,7 @@ const ServiceRow = ({ number, title, desc, tags }) => (
   </div>
 );
 
-export default function App() {
+export default function App({ onNavigateToComics = () => {} }) {
   const scrollProgress = useScrollProgress();
   const [hoveredCase, setHoveredCase] = useState(null);
 
@@ -120,14 +120,29 @@ export default function App() {
 
           {/* Desktop Links */}
           <div className="hidden md:flex flex-1 items-center justify-end bg-zinc-950/50">
-             {['Models', 'Neural-Art', 'Deployments', 'Uplink'].map((item, i) => (
-               <a key={i} href={`#${item.toLowerCase()}`} className="h-full flex items-center px-8 text-xs font-mono uppercase tracking-widest hover:bg-zinc-900 hover:text-lime-400 border-l border-zinc-800 transition-colors">
-                 {item}
-               </a>
-             ))}
-             <button className="h-full px-8 bg-lime-400 text-black font-bold uppercase text-sm tracking-wide hover:bg-white transition-colors flex items-center gap-2">
-               <Terminal className="w-4 h-4" /> Start Prompt
-             </button>
+            {[{
+              label: 'Models', href: '#models'
+            }, {
+              label: 'Neural-Art', href: '#neural-art'
+            }, {
+              label: 'Deployments', href: '#showcase'
+            }, {
+              label: 'Uplink', href: '#uplink'
+            }, {
+              label: 'Comics', onClick: onNavigateToComics
+            }].map((item, i) => (
+              <button
+                key={i}
+                onClick={() => item.onClick ? item.onClick() : window.location.assign(item.href)}
+                className="h-full flex items-center px-8 text-xs font-mono uppercase tracking-widest hover:bg-zinc-900 hover:text-lime-400 border-l border-zinc-800 transition-colors"
+                type="button"
+              >
+                {item.label}
+              </button>
+            ))}
+            <button className="h-full px-8 bg-lime-400 text-black font-bold uppercase text-sm tracking-wide hover:bg-white transition-colors flex items-center gap-2">
+              <Terminal className="w-4 h-4" /> Start Prompt
+            </button>
           </div>
 
           {/* Mobile Toggle */}
@@ -163,6 +178,18 @@ export default function App() {
                 <p className="text-xl md:text-2xl text-zinc-400 font-light leading-relaxed">
                   We craft <span className="text-white font-medium border-b border-lime-400">synthetic media</span> and train <span className="text-white font-medium border-b border-fuchsia-500">bespoke models</span>. No cameras, just code.
                 </p>
+                <div className="flex flex-col sm:flex-row sm:items-center gap-4 mt-6">
+                  <button
+                    type="button"
+                    onClick={onNavigateToComics}
+                    className="inline-flex items-center gap-2 bg-lime-400 text-black font-bold px-4 py-3 uppercase tracking-widest text-sm hover:bg-white transition-colors"
+                  >
+                    <Terminal className="w-4 h-4" /> Launch Comics Exchange
+                  </button>
+                  <p className="font-mono text-xs uppercase tracking-[0.2em] text-zinc-500">
+                    Now shipping sequential art via Cloudflare Pages
+                  </p>
+                </div>
               </div>
               
               <div className="flex flex-col font-mono text-xs text-zinc-500 gap-1 text-right">
@@ -274,6 +301,65 @@ export default function App() {
       </section>
 
       <Showcase />
+
+      {/* --- Comics CTA --- */}
+      <section id="comics" className="border-y border-zinc-800 bg-zinc-950 py-20 px-6 md:px-12">
+        <div className="max-w-6xl mx-auto grid lg:grid-cols-[1.2fr,1fr] gap-10 items-center">
+          <div>
+            <p className="font-mono text-xs text-lime-400 uppercase tracking-[0.3em] mb-3">Cloudflare ready</p>
+            <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white mb-4">Comics Exchange</h2>
+            <p className="text-lg text-zinc-400 leading-relaxed mb-6">
+              Route your readers to a dedicated comics surface that ships with the build. Clicking through opens a full-page
+              selector where each issue is paired with a Cloudflare Images delivery path—perfect for R2 or Images backed
+              hosting.
+            </p>
+            <div className="flex flex-wrap gap-3">
+              {["SPA friendly routing", "Cloudflare Image hints", "Edge cached on Pages"].map((tag) => (
+                <span key={tag} className="text-[10px] font-mono uppercase tracking-[0.25em] text-zinc-200 border border-zinc-700 px-3 py-1 rounded-sm">
+                  {tag}
+                </span>
+              ))}
+            </div>
+            <div className="mt-8 flex flex-col sm:flex-row gap-3">
+              <button
+                type="button"
+                onClick={onNavigateToComics}
+                className="inline-flex items-center gap-2 bg-lime-400 text-black font-bold px-5 py-3 uppercase tracking-widest text-sm hover:bg-white transition-colors"
+              >
+                <ArrowUpRight className="w-4 h-4" /> Go to comics
+              </button>
+              <a
+                href="https://developers.cloudflare.com/images"
+                className="inline-flex items-center gap-2 text-xs font-mono uppercase tracking-widest text-lime-400 border border-lime-400/30 px-4 py-3 hover:bg-lime-400 hover:text-black transition-colors"
+                target="_blank"
+                rel="noreferrer"
+              >
+                Cloudflare Images <ArrowUpRight className="w-3 h-3" />
+              </a>
+            </div>
+          </div>
+          <div className="grid sm:grid-cols-2 gap-4">
+            {[{
+              title: 'Cloudflare Pages ready',
+              desc: 'Included /_redirects file keeps /comics deep-link healthy as a single-page app.',
+            }, {
+              title: 'Swappable covers',
+              desc: 'Each card exposes the delivery URL pattern so you can paste your Cloudflare asset IDs.',
+            }, {
+              title: 'Edge observability',
+              desc: 'Pair with Pages Analytics or Logs to monitor engagement on the comic catalog.',
+            }, {
+              title: 'Speed without servers',
+              desc: 'All static assets bundle into Vite build—nothing to maintain beyond npm run build.',
+            }].map((item, idx) => (
+              <div key={idx} className="border border-zinc-800 bg-zinc-900/60 p-4 rounded-md">
+                <p className="text-sm text-lime-400 font-mono uppercase tracking-[0.2em] mb-2">{item.title}</p>
+                <p className="text-zinc-300 text-sm leading-relaxed">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* --- Interactive Terminal (CTA) --- */}
       <section id="uplink" className="border-y border-zinc-800 bg-zinc-900 py-24 px-6 md:px-12 relative overflow-hidden">
