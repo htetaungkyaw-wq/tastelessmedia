@@ -1,8 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 
-// Replace this with your actual R2 public base URL.
-// Example: "https://pub-xxxxxxxxxxxxxxxxxxxxxxxx.r2.dev"
-const R2_BASE = 'https://YOUR_R2_PUBLIC_HOST';
+// Public base URL for the comic assets hosted on R2.
+const R2_BASE = 'https://pub-bf6e2f70f5bb4ea988c32f6edb2780d4.r2.dev';
 
 // Library of comics. Add more objects to this array later.
 const COMICS = [
