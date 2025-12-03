@@ -341,7 +341,7 @@ export default function App({ onNavigateToComics = () => {} }) {
           <div className="grid sm:grid-cols-2 gap-4">
             {[{
               title: 'Cloudflare Pages ready',
-              desc: 'Included /_redirects file keeps /comics deep-link healthy as a single-page app.',
+              desc: 'Included /_redirects file keeps /comic deep-link healthy as a single-page app.',
             }, {
               title: 'Swappable covers',
               desc: 'Each card exposes the delivery URL pattern so you can paste your Cloudflare asset IDs.',
