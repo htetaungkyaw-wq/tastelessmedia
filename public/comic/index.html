@@ -1,0 +1,348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tasteless Media – Comic Reader</title>
+  <!-- Tailwind CSS CDN (for layout & basic styles) -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+
+    body {
+      background: #050816;
+      color: #f9fafb;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    /* Reader container fills remaining viewport height under header */
+    .reader-shell {
+      height: calc(100vh - 80px); /* header about 80px */
+    }
+
+    /* Image must always fit screen (contain) */
+    .comic-image {
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      box-shadow: 0 15px 40px rgba(0,0,0,0.8);
+      border-radius: 0.75rem;
+      background: #020617;
+    }
+
+    img::selection {
+      background: transparent;
+    }
+
+    /* Fade-in animation when page changes */
+    .fade-in {
+      animation: fadeIn 200ms ease-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to   { opacity: 1; transform: translateY(0);   }
+    }
+  </style>
+</head>
+<body class="flex flex-col min-h-screen">
+  <!-- HEADER -->
+  <header class="w-full border-b border-slate-800 bg-slate-950/80 backdrop-blur flex items-center justify-between px-4 sm:px-8 py-4">
+    <div class="flex items-center gap-3">
+      <div class="h-9 w-9 rounded-xl bg-gradient-to-br from-indigo-500 via-purple-500 to-fuchsia-500 flex items-center justify-center text-xs font-bold tracking-tight">
+        TM
+      </div>
+      <div>
+        <h1 class="text-lg sm:text-xl font-semibold tracking-tight">Tasteless Media – Comic Reader</h1>
+        <p class="text-xs sm:text-sm text-slate-400">Use ← / → keys to switch pages</p>
+      </div>
+    </div>
+
+    <div class="hidden sm:flex items-center gap-3 text-[11px] sm:text-xs text-slate-400">
+      <span class="px-2 py-1 rounded-full border border-slate-700/80 bg-slate-900/60">
+        ← Prev
+      </span>
+      <span class="px-2 py-1 rounded-full border border-slate-700/80 bg-slate-900/60">
+        Next →
+      </span>
+      <span class="px-2 py-1 rounded-full border border-slate-700/80 bg-slate-900/60">
+        F (focus)
+      </span>
+    </div>
+  </header>
+
+  <!-- MAIN AREA -->
+  <main class="flex-1 flex flex-col">
+    <!-- COVER / SELECTION -->
+    <section id="selectionView" class="flex-1 flex flex-col items-center justify-center px-4 sm:px-8 gap-8 text-center">
+      <div class="max-w-xl space-y-3">
+        <p class="text-sm uppercase tracking-[0.2em] text-indigo-300">New Release</p>
+        <h2 class="text-2xl sm:text-3xl font-bold">Eyes in the Dark</h2>
+        <p class="text-slate-300 text-sm sm:text-base">Tap the cover to start reading. Once inside, use the arrow keys or click the page to move forward.</p>
+      </div>
+      <button id="startReader" class="relative group focus:outline-none">
+        <div class="absolute -inset-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-fuchsia-500 opacity-70 blur-lg transition duration-500 group-hover:opacity-100"></div>
+        <div class="relative bg-slate-900/80 border border-slate-800 rounded-2xl shadow-2xl overflow-hidden">
+          <img id="coverImage" src="" alt="Eyes in the Dark cover" class="w-[280px] sm:w-[360px] object-cover">
+          <div class="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent"></div>
+          <div class="absolute bottom-0 left-0 right-0 p-4 flex items-center justify-between text-sm text-slate-100">
+            <div class="flex items-center gap-2">
+              <span class="h-2 w-2 rounded-full bg-emerald-400 animate-pulse"></span>
+              <span class="uppercase tracking-[0.25em] text-[11px]">Available</span>
+            </div>
+            <div class="px-3 py-1 rounded-full bg-black/50 border border-slate-700 text-[12px]">Start reading →</div>
+          </div>
+        </div>
+      </button>
+    </section>
+
+    <!-- MAIN READER AREA -->
+    <section id="readerView" class="reader-shell flex flex-col hidden">
+      <!-- Top control bar -->
+      <div class="flex items-center justify-between px-4 sm:px-8 pt-3 pb-1 text-xs sm:text-sm text-slate-300 select-none">
+        <div class="flex items-center gap-2">
+          <button id="prevBtn" class="px-3 py-1.5 rounded-full border border-slate-700 bg-slate-900/80 hover:bg-slate-800 transition text-[11px] sm:text-xs flex items-center gap-1">
+            <span>←</span>
+            <span>Prev</span>
+          </button>
+          <button id="nextBtn" class="px-3 py-1.5 rounded-full border border-slate-700 bg-slate-900/80 hover:bg-slate-800 transition text-[11px] sm:text-xs flex items-center gap-1">
+            <span>Next</span>
+            <span>→</span>
+          </button>
+        </div>
+
+        <div class="flex items-center gap-3">
+          <div class="flex items-center gap-1 text-[11px] sm:text-xs">
+            <span id="pageLabel" class="px-2 py-1 rounded-full bg-slate-900/80 border border-slate-700">
+              Page 1 / 1
+            </span>
+          </div>
+
+          <select id="pageJump" class="bg-slate-900/80 border border-slate-700 text-[11px] sm:text-xs rounded-full px-2 py-1.5 focus:outline-none focus:ring-1 focus:ring-indigo-500">
+            <!-- options injected by JS -->
+          </select>
+        </div>
+      </div>
+
+      <!-- Reader viewport -->
+      <div id="readerViewport" class="flex-1 px-3 sm:px-8 pb-6 flex items-center justify-center select-none">
+        <img
+          id="comicImage"
+          src=""
+          alt="Comic page"
+          class="comic-image fade-in"
+          draggable="false"
+        />
+      </div>
+    </section>
+
+    <!-- THUMBNAIL STRIP -->
+    <section id="thumbSection" class="border-t border-slate-900 bg-slate-950/90 px-3 sm:px-8 py-3 overflow-x-auto hidden">
+      <div id="thumbStrip" class="flex items-center gap-2 sm:gap-3 text-xs">
+        <!-- thumbnails injected by JS -->
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // 1) CONFIG: comics list (cover + pages)
+    const comics = [
+      {
+        title: "Eyes in the Dark",
+        cover: "https://pub-bf6e2f70f5bb4ea988c32f6edb2780d4.r2.dev/eyes-in-the-dark/cover.png",
+        pages: [
+          "https://pub-bf6e2f70f5bb4ea988c32f6edb2780d4.r2.dev/eyes-in-the-dark/page-1.png",
+          "https://pub-bf6e2f70f5bb4ea988c32f6edb2780d4.r2.dev/eyes-in-the-dark/page-2.png",
+          "https://pub-bf6e2f70f5bb4ea988c32f6edb2780d4.r2.dev/eyes-in-the-dark/page-3.png",
+          "https://pub-bf6e2f70f5bb4ea988c32f6edb2780d4.r2.dev/eyes-in-the-dark/page-4.png",
+          "https://pub-bf6e2f70f5bb4ea988c32f6edb2780d4.r2.dev/eyes-in-the-dark/page-5.png"
+        ]
+      }
+    ];
+
+    let comicPages = [];
+    let currentPageIndex = 0; // 0-based index
+
+    // 3) DOM ELEMENTS
+    const comicImage = document.getElementById("comicImage");
+    const pageLabel = document.getElementById("pageLabel");
+    const pageJump  = document.getElementById("pageJump");
+    const prevBtn   = document.getElementById("prevBtn");
+    const nextBtn   = document.getElementById("nextBtn");
+    const thumbStrip = document.getElementById("thumbStrip");
+    const readerView = document.getElementById("readerView");
+    const thumbSection = document.getElementById("thumbSection");
+    const selectionView = document.getElementById("selectionView");
+    const startReader = document.getElementById("startReader");
+    const coverImage = document.getElementById("coverImage");
+
+    // 4) INITIAL SETUP HELPERS
+    function initPageJump() {
+      pageJump.innerHTML = "";
+      comicPages.forEach((src, index) => {
+        const opt = document.createElement("option");
+        opt.value = index;
+        opt.textContent = `Page ${index + 1}`;
+        pageJump.appendChild(opt);
+      });
+    }
+
+    function initThumbnails() {
+      thumbStrip.innerHTML = "";
+      comicPages.forEach((src, index) => {
+        const btn = document.createElement("button");
+        btn.className = "relative group flex-shrink-0";
+
+        const img = document.createElement("img");
+        img.src = src;
+        img.alt = `Page ${index + 1}`;
+        img.className = "h-16 sm:h-20 rounded-lg object-cover border border-slate-800/80 group-hover:border-indigo-500 transition";
+
+        const badge = document.createElement("div");
+        badge.className = "absolute bottom-1 left-1 px-1.5 py-0.5 rounded-full bg-black/70 text-[10px] text-slate-100";
+        badge.textContent = index + 1;
+
+        btn.appendChild(img);
+        btn.appendChild(badge);
+
+        btn.addEventListener("click", () => {
+          goToPage(index);
+        });
+
+        thumbStrip.appendChild(btn);
+      });
+    }
+
+    // 5) RENDER CURRENT PAGE
+    function renderPage() {
+      const total = comicPages.length;
+      if (total === 0) return;
+
+      if (currentPageIndex < 0) currentPageIndex = 0;
+      if (currentPageIndex >= total) currentPageIndex = total - 1;
+
+      const src = comicPages[currentPageIndex];
+
+      // Fade-in: remove then re-add class
+      comicImage.classList.remove("fade-in");
+      void comicImage.offsetWidth; // force reflow
+      comicImage.src = src;
+      comicImage.classList.add("fade-in");
+
+      pageLabel.textContent = `Page ${currentPageIndex + 1} / ${total}`;
+      pageJump.value = String(currentPageIndex);
+
+      // Highlight active thumbnail & scroll into view
+      const thumbButtons = thumbStrip.querySelectorAll("button");
+      thumbButtons.forEach((btn, index) => {
+        const img = btn.querySelector("img");
+        if (!img) return;
+        if (index === currentPageIndex) {
+          img.classList.add("ring-2", "ring-indigo-500");
+        } else {
+          img.classList.remove("ring-2", "ring-indigo-500");
+        }
+      });
+
+      const activeThumb = thumbButtons[currentPageIndex];
+      if (activeThumb && typeof activeThumb.scrollIntoView === "function") {
+        activeThumb.scrollIntoView({
+          behavior: "smooth",
+          inline: "center",
+          block: "nearest"
+        });
+      }
+    }
+
+    function goToPage(index) {
+      currentPageIndex = index;
+      renderPage();
+    }
+
+    function nextPage() {
+      if (currentPageIndex < comicPages.length - 1) {
+        currentPageIndex++;
+        renderPage();
+      }
+    }
+
+    function prevPage() {
+      if (currentPageIndex > 0) {
+        currentPageIndex--;
+        renderPage();
+      }
+    }
+
+    function loadComic(comicIndex) {
+      const comic = comics[comicIndex];
+      if (!comic) return;
+
+      comicPages = comic.pages;
+      currentPageIndex = 0;
+      initPageJump();
+      initThumbnails();
+      renderPage();
+
+      selectionView.classList.add("hidden");
+      readerView.classList.remove("hidden");
+      thumbSection.classList.remove("hidden");
+    }
+
+    // 6) EVENTS
+
+    // Keyboard navigation: ← / → and F for focus
+    document.addEventListener("keydown", (e) => {
+      const active = document.activeElement;
+      if (active && (active.tagName === "INPUT" || active.tagName === "TEXTAREA")) return;
+
+      if (e.key === "ArrowRight") {
+        e.preventDefault();
+        nextPage();
+      } else if (e.key === "ArrowLeft") {
+        e.preventDefault();
+        prevPage();
+      } else if (e.key.toLowerCase() === "f") {
+        e.preventDefault();
+        tryFocusImage();
+      }
+    });
+
+    // Buttons
+    prevBtn.addEventListener("click", prevPage);
+    nextBtn.addEventListener("click", nextPage);
+
+    // Jump select
+    pageJump.addEventListener("change", (e) => {
+      const index = parseInt(e.target.value, 10);
+      if (!Number.isNaN(index)) {
+        goToPage(index);
+      }
+    });
+
+    // Click on image -> next page
+    comicImage.addEventListener("click", () => {
+      nextPage();
+    });
+
+    function tryFocusImage() {
+      if (comicImage && typeof comicImage.focus === "function") {
+        comicImage.tabIndex = -1;
+        comicImage.focus();
+      }
+    }
+
+    // 7) INIT
+    if (comics.length > 0) {
+      coverImage.src = comics[0].cover;
+      startReader.addEventListener("click", () => loadComic(0));
+    } else {
+      pageLabel.textContent = "No pages configured";
+    }
+  </script>
+</body>
+</html>
