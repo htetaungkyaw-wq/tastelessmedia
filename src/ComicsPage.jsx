@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { ArrowLeft, ArrowUp, BookOpen, Home, PanelsTopLeft } from 'lucide-react';
 
 // Public base URL for the comic assets hosted on R2.
@@ -37,8 +37,7 @@ const getComicBySlug = (slug) => COMICS.find((c) => c.slug === slug) || null;
 const ComicsPage = ({ onNavigateHome }) => {
   const [route, setRoute] = useState(parseHash());
   const [currentPageIndex, setCurrentPageIndex] = useState(0);
-  const pageRefs = useRef([]);
-  const observerRef = useRef(null);
+  const [fitToScreen, setFitToScreen] = useState(false);
 
   const currentSlug = useMemo(
     () => (route.route === 'reader' ? route.params.get('slug') : null),
@@ -56,13 +55,16 @@ const ComicsPage = ({ onNavigateHome }) => {
     window.location.hash = `#reader?slug=${encodeURIComponent(slug)}`;
   };
 
-  const scrollToPage = (index) => {
-    const pages = pageRefs.current.filter(Boolean);
-    if (!pages.length) return;
-    const clampedIndex = Math.min(Math.max(index, 0), pages.length - 1);
-    pages[clampedIndex].scrollIntoView({ behavior: 'smooth', block: 'start' });
-    setCurrentPageIndex(clampedIndex);
-  };
+  const totalPages = currentComic?.pages.length ?? 0;
+
+  const goToPage = useCallback(
+    (index) => {
+      if (!totalPages) return;
+      const clampedIndex = Math.min(Math.max(index, 0), totalPages - 1);
+      setCurrentPageIndex(clampedIndex);
+    },
+    [totalPages],
+  );
 
   useEffect(() => {
     const handleHash = () => setRoute(parseHash());
@@ -72,9 +74,6 @@ const ComicsPage = ({ onNavigateHome }) => {
   }, []);
 
   useEffect(() => {
-    pageRefs.current = [];
-    observerRef.current?.disconnect();
-
     if (route.route === 'reader' && currentComic) {
       document.title = `${currentComic.title} – Reader`;
     } else {
@@ -82,41 +81,32 @@ const ComicsPage = ({ onNavigateHome }) => {
     }
 
     setCurrentPageIndex(0);
-    return () => observerRef.current?.disconnect();
+    setFitToScreen(false);
   }, [route, currentComic]);
 
   useEffect(() => {
     if (route.route !== 'reader' || !currentComic) return undefined;
 
-    const pages = pageRefs.current.filter(Boolean);
-    if (!pages.length) return undefined;
+    const handleKey = (event) => {
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        goToPage(currentPageIndex + 1);
+      }
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        goToPage(currentPageIndex - 1);
+      }
+    };
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            const idx = Number(entry.target.dataset.index || '0');
-            setCurrentPageIndex(idx);
-          }
-        });
-      },
-      {
-        root: null,
-        threshold: 0.55,
-      },
-    );
-
-    observerRef.current = observer;
-    pages.forEach((img) => observer.observe(img));
-
-    pages[0].scrollIntoView({ behavior: 'smooth', block: 'start' });
-
-    return () => observer.disconnect();
-  }, [route, currentComic]);
+    window.addEventListener('keydown', handleKey);
+    return () => window.removeEventListener('keydown', handleKey);
+  }, [route, currentComic, currentPageIndex, goToPage]);
 
   const pageIndicatorText = currentComic?.pages?.length
     ? `${currentPageIndex + 1} / ${currentComic.pages.length}`
     : '';
+
+  const currentPageSrc = currentComic?.pages?.[currentPageIndex] || '';
 
   return (
     <div className="bg-zinc-950 text-zinc-100 min-h-screen selection:bg-lime-400 selection:text-black">
@@ -226,8 +216,17 @@ const ComicsPage = ({ onNavigateHome }) => {
                     <PanelsTopLeft className="w-4 h-4" /> R2 Vault
                   </span>
                 </div>
-                <div id="pageIndicator" className="text-xs font-mono uppercase tracking-[0.2em] text-lime-300">
-                  {pageIndicatorText}
+                <div className="flex items-center gap-3">
+                  <button
+                    type="button"
+                    className="px-3 py-2 rounded-md border border-zinc-800 bg-zinc-900 text-[11px] font-semibold tracking-wide hover:border-lime-400 hover:text-lime-300 transition"
+                    onClick={() => setFitToScreen((prev) => !prev)}
+                  >
+                    {fitToScreen ? 'Natural Size' : 'Fit to Screen'}
+                  </button>
+                  <div id="pageIndicator" className="text-xs font-mono uppercase tracking-[0.2em] text-lime-300">
+                    {pageIndicatorText}
+                  </div>
                 </div>
               </div>
 
@@ -242,24 +241,21 @@ const ComicsPage = ({ onNavigateHome }) => {
                 </div>
 
                 <div id="pagesContainer" className="mt-6 flex flex-col items-center gap-6 pb-16">
-                  {currentComic?.pages.map((src, index) => (
-                    <div key={src} className="w-full flex justify-center">
-                      <div className="relative w-full max-w-[720px] overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950 shadow-xl">
+                  {currentComic && (
+                    <div className="w-full flex justify-center">
+                      <div className="relative w-full max-w-[820px] overflow-hidden rounded-xl border border-zinc-800 bg-zinc-950 shadow-xl">
                         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-zinc-950/40 pointer-events-none"></div>
                         <img
-                          src={src}
-                          alt={`${currentComic.title} – Page ${index + 1}`}
+                          src={currentPageSrc}
+                          alt={`${currentComic.title} – Page ${currentPageIndex + 1}`}
                           loading="lazy"
-                          className="w-full object-contain bg-zinc-950"
-                          data-index={index}
-                          ref={(el) => {
-                            pageRefs.current[index] = el;
-                          }}
+                          className="w-full object-contain bg-zinc-950 transition-all duration-300"
+                          style={fitToScreen ? { maxHeight: 'calc(100vh - 280px)' } : undefined}
                         />
-                        <div className="absolute top-3 left-3 px-3 py-1 rounded-full border border-zinc-800 bg-black/60 text-[10px] font-mono uppercase tracking-[0.25em] text-zinc-400">Pg {index + 1}</div>
+                        <div className="absolute top-3 left-3 px-3 py-1 rounded-full border border-zinc-800 bg-black/60 text-[10px] font-mono uppercase tracking-[0.25em] text-zinc-400">Pg {currentPageIndex + 1}</div>
                       </div>
                     </div>
-                  ))}
+                  )}
                 </div>
               </div>
 
@@ -271,7 +267,7 @@ const ComicsPage = ({ onNavigateHome }) => {
                   id="btnPrevDesktop"
                   className="px-4 py-2 rounded-lg border border-zinc-800 bg-zinc-950 text-xs font-semibold hover:border-lime-400 hover:text-lime-300 transition"
                   type="button"
-                  onClick={() => scrollToPage(currentPageIndex - 1)}
+                  onClick={() => goToPage(currentPageIndex - 1)}
                 >
                   Previous
                 </button>
@@ -279,7 +275,7 @@ const ComicsPage = ({ onNavigateHome }) => {
                   id="btnNextDesktop"
                   className="px-4 py-2 rounded-lg border border-zinc-800 bg-zinc-950 text-xs font-semibold hover:border-lime-400 hover:text-lime-300 transition"
                   type="button"
-                  onClick={() => scrollToPage(currentPageIndex + 1)}
+                  onClick={() => goToPage(currentPageIndex + 1)}
                 >
                   Next
                 </button>
@@ -301,7 +297,7 @@ const ComicsPage = ({ onNavigateHome }) => {
                   id="btnPrevMobile"
                   className="px-4 py-2 rounded-lg border border-zinc-800 text-xs font-semibold text-zinc-200 bg-zinc-900 hover:border-lime-400 hover:text-lime-300 transition"
                   type="button"
-                  onClick={() => scrollToPage(currentPageIndex - 1)}
+                  onClick={() => goToPage(currentPageIndex - 1)}
                 >
                   Prev
                 </button>
@@ -312,7 +308,7 @@ const ComicsPage = ({ onNavigateHome }) => {
                   id="btnNextMobile"
                   className="px-4 py-2 rounded-lg border border-zinc-800 text-xs font-semibold text-zinc-200 bg-zinc-900 hover:border-lime-400 hover:text-lime-300 transition"
                   type="button"
-                  onClick={() => scrollToPage(currentPageIndex + 1)}
+                  onClick={() => goToPage(currentPageIndex + 1)}
                 >
                   Next
                 </button>
