@@ -165,18 +165,18 @@ export default function App({ onNavigateToComics = () => {} }) {
           <div className="max-w-7xl">
             <div className="flex items-center gap-3 mb-6">
               <div className="w-2 h-2 bg-lime-400 animate-pulse rounded-full"></div>
-              <span className="font-mono text-xs text-lime-400 uppercase tracking-widest">Neural Networks Online</span>
+              <span className="font-mono text-xs text-lime-400 uppercase tracking-widest">Transmission 001 // Public feed</span>
             </div>
-            
+
             <h1 className="text-[12vw] leading-[0.85] font-black tracking-tighter text-white mb-8 mix-blend-difference">
-              REALITY IS <br/>
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-500 to-zinc-800">OPTIONAL.</span>
+              MAKE THE <br/>
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-zinc-500 to-zinc-800">UNREAL INEVITABLE.</span>
             </h1>
-            
+
             <div className="flex flex-col md:flex-row md:items-end justify-between gap-12 border-t border-zinc-800 pt-8 mt-8">
               <div className="max-w-xl">
                 <p className="text-xl md:text-2xl text-zinc-400 font-light leading-relaxed">
-                  We craft <span className="text-white font-medium border-b border-lime-400">synthetic media</span> and train <span className="text-white font-medium border-b border-fuchsia-500">bespoke models</span>. No cameras, just code.
+                  Tasteless Media is a synthetic production unit. We spin up <span className="text-white font-medium border-b border-lime-400">campaign-grade visuals</span>, <span className="text-white font-medium border-b border-fuchsia-500">motion pieces</span>, and <span className="text-white font-medium border-b border-sky-400">custom AI stacks</span> with no cameras required.
                 </p>
                 <div className="flex flex-col sm:flex-row sm:items-center gap-4 mt-6">
                   <button
@@ -184,18 +184,18 @@ export default function App({ onNavigateToComics = () => {} }) {
                     onClick={onNavigateToComics}
                     className="inline-flex items-center gap-2 bg-lime-400 text-black font-bold px-4 py-3 uppercase tracking-widest text-sm hover:bg-white transition-colors"
                   >
-                    <Terminal className="w-4 h-4" /> Launch Comics Exchange
+                    <Terminal className="w-4 h-4" /> Open Sequential Lab
                   </button>
                   <p className="font-mono text-xs uppercase tracking-[0.2em] text-zinc-500">
-                    Now shipping sequential art via Cloudflare Pages
+                    Figma x Cloudflare delivery, straight from the vault
                   </p>
                 </div>
               </div>
-              
+
               <div className="flex flex-col font-mono text-xs text-zinc-500 gap-1 text-right">
-                <span>GPU CLUSTER: ONLINE</span>
-                <span>LATENCY: 12ms</span>
-                <span>STATUS: TRAINING...</span>
+                <span>GPU CLUSTER: GREENLIGHT</span>
+                <span>RENDITIONS: 45/cycle</span>
+                <span>STATUS: DEPLOYING NEW RUNS</span>
               </div>
             </div>
           </div>
@@ -203,15 +203,15 @@ export default function App({ onNavigateToComics = () => {} }) {
 
         {/* Hero Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 border-t border-zinc-800">
-          <StatCard label="Images Generated" value="1.2M+" trend="↑ Weekly" icon={Aperture} />
-          <StatCard label="Model Accuracy" value="99.4%" trend="v4.0 Beta" icon={BrainCircuit} />
-          <StatCard label="Render Time" value="<8s" trend="Real-time" icon={Zap} />
-          <StatCard label="Styles Trained" value="450+" trend="Library" icon={Code2} />
+          <StatCard label="Launch Assets" value="380+" trend="Campaign ready" icon={Aperture} />
+          <StatCard label="Prototype Windows" value="<24h" trend="Speed lane" icon={BrainCircuit} />
+          <StatCard label="Inference Latency" value="9ms" trend="Edge tuned" icon={Zap} />
+          <StatCard label="Custom Pipelines" value="30+" trend="Live" icon={Code2} />
         </div>
       </header>
 
       {/* --- Marquee --- */}
-      <Marquee items={['Stable Diffusion', 'Midjourney v6', 'Runway Gen-2', 'Llama 3', 'LoRA Training', 'Synthetic Video', 'ControlNet']} />
+      <Marquee items={['Campaign Engine', 'Text-to-Video', 'Fine-tuned LoRAs', 'ControlNet', 'Edge Delivery', 'Comics Exchange', 'Realtime Renders']} />
 
       {/* --- Services (The Protocol) --- */}
       <section id="models" className="border-t border-zinc-800 bg-zinc-950 relative">
@@ -224,23 +224,23 @@ export default function App({ onNavigateToComics = () => {} }) {
             
             {/* Service List */}
             <div className="flex-1">
-              <ServiceRow 
-                number="01" 
-                title="Generative Imaging" 
-                desc="We prompt engineering to the limit. Photorealistic product shots, abstract architectural concepts, or stylized character art—generated in seconds, not days."
-                tags={['Midjourney', 'Flux', 'DALL-E 3', 'Upscaling']}
+              <ServiceRow
+                number="01"
+                title="Campaign Labs"
+                desc="Rapid-fire explorations for product drops, album releases, and experiential stunts. We build the visual language before the shoot would have even wrapped."
+                tags={['Storyboard grids', 'Product renders', 'Key art', 'Variations']}
               />
-              <ServiceRow 
-                number="02" 
-                title="Synthetic Video" 
-                desc="Text-to-Video and Image-to-Video workflows that defy physics. We create commercials, social clips, and music visualizations without a single camera lens."
-                tags={['Runway Gen-3', 'Pika Labs', 'Sora', 'Deforum']}
+              <ServiceRow
+                number="02"
+                title="Motion Systems"
+                desc="Text-to-video, camera-controlled clips, and animated stills for social. Motion design without a set—perfect for teasers, lyric shorts, and reactive ads."
+                tags={['Runway Gen-3', 'Camera paths', 'Interpolations', 'Color grades']}
               />
-              <ServiceRow 
-                number="03" 
-                title="Custom Model Training" 
-                desc="Your brand's aesthetic, codified. We train custom LoRAs and fine-tune checkpoints on your specific products and style guidelines."
-                tags={['Dreambooth', 'Kohya_ss', 'Style Transfer', 'IP-Adapter']}
+              <ServiceRow
+                number="03"
+                title="Model Ops"
+                desc="Style-locked LoRAs, IP adapters, and assistants tuned to your product stack. Delivered with prompts, seeds, and repeatable runbooks."
+                tags={['LoRA kits', 'Adapters', 'Seed packs', 'Prompt notebooks']}
               />
             </div>
          </div>
@@ -250,20 +250,20 @@ export default function App({ onNavigateToComics = () => {} }) {
       <section id="neural-art" className="py-24 md:py-32 px-6 md:px-12 border-t border-zinc-800">
         <div className="flex flex-col md:flex-row justify-between items-end mb-16">
           <div>
-             <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-white mb-4">SYNTHETIC<br/>ARCHIVE</h2>
-             <p className="font-mono text-zinc-500 text-sm uppercase tracking-widest">Recent Generations</p>
+             <h2 className="text-4xl md:text-6xl font-black tracking-tighter text-white mb-4">DEPLOYMENT<br/>LOG</h2>
+             <p className="font-mono text-zinc-500 text-sm uppercase tracking-widest">Recent synth runs</p>
           </div>
           <button className="hidden md:flex items-center gap-2 font-mono text-xs text-lime-400 border border-lime-400/30 px-4 py-2 hover:bg-lime-400 hover:text-black transition-colors uppercase">
-            View Database <ArrowUpRight className="w-3 h-3" />
+            Open vault <ArrowUpRight className="w-3 h-3" />
           </button>
         </div>
 
         <div className="grid lg:grid-cols-2 gap-8">
           {[
-            { client: "CYBER VOGUE", metric: "100% AI", desc: "Full editorial shoot generated via Midjourney v6.", color: "bg-fuchsia-900" },
-            { client: "NEON BEVERAGE", metric: "TV Spot", desc: "AI-generated commercial using Runway Gen-2.", color: "bg-blue-900" },
-            { client: "ARCHI-VIZ", metric: "200 Concepts", desc: "Rapid architectural prototyping for urban planning.", color: "bg-emerald-900" },
-            { client: "MUSIC VIDEO", metric: "Frame Interpolation", desc: "Stable Diffusion Deforum animation for indie artist.", color: "bg-orange-900" }
+            { client: "CLOUD CASSETTE", metric: "Launch Film", desc: "Text-to-video trailer cut from a single prompt thread.", color: "bg-fuchsia-900" },
+            { client: "STADIUM ENERGY", metric: "OOH Suite", desc: "Dozens of billboard variants rendered overnight.", color: "bg-blue-900" },
+            { client: "AETHER HOTEL", metric: "Lobby Loop", desc: "Procedural motion art for in-venue displays.", color: "bg-emerald-900" },
+            { client: "ZINE DROP", metric: "Sequential", desc: "AI comic experiment stitched for print and web.", color: "bg-orange-900" }
           ].map((item, i) => (
             <div 
               key={i}
@@ -307,14 +307,13 @@ export default function App({ onNavigateToComics = () => {} }) {
         <div className="max-w-6xl mx-auto grid lg:grid-cols-[1.2fr,1fr] gap-10 items-center">
           <div>
             <p className="font-mono text-xs text-lime-400 uppercase tracking-[0.3em] mb-3">Cloudflare ready</p>
-            <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white mb-4">Comics Exchange</h2>
+            <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white mb-4">Sequential Lab</h2>
             <p className="text-lg text-zinc-400 leading-relaxed mb-6">
-              Route your readers to a dedicated comics surface that ships with the build. Clicking through opens a full-page
-              selector where each issue is paired with a Cloudflare Images delivery path—perfect for R2 or Images backed
-              hosting.
+              A first-class portal for comics, zines, and motion tests. Launch the reader to browse Cloudflare-backed issues,
+              swap in your own image delivery hashes, and keep the brutalist shell intact for every drop.
             </p>
             <div className="flex flex-wrap gap-3">
-              {["SPA friendly routing", "Cloudflare Image hints", "Edge cached on Pages"].map((tag) => (
+              {["SPA friendly routing", "Cloudflare delivery IDs", "Edge cached on Pages"].map((tag) => (
                 <span key={tag} className="text-[10px] font-mono uppercase tracking-[0.25em] text-zinc-200 border border-zinc-700 px-3 py-1 rounded-sm">
                   {tag}
                 </span>
@@ -326,7 +325,7 @@ export default function App({ onNavigateToComics = () => {} }) {
                 onClick={onNavigateToComics}
                 className="inline-flex items-center gap-2 bg-lime-400 text-black font-bold px-5 py-3 uppercase tracking-widest text-sm hover:bg-white transition-colors"
               >
-                <ArrowUpRight className="w-4 h-4" /> Go to comics
+                <ArrowUpRight className="w-4 h-4" /> Open reader
               </button>
               <a
                 href="https://developers.cloudflare.com/images"
@@ -382,11 +381,11 @@ export default function App({ onNavigateToComics = () => {} }) {
             {/* Terminal Body */}
             <div className="p-8 md:p-12 font-mono text-sm md:text-base space-y-6">
               <div className="text-zinc-400">
-                <span className="text-lime-400">➜</span> <span className="text-blue-400">~</span> pip install tasteless-media-studio
+                <span className="text-lime-400">➜</span> <span className="text-blue-400">~</span> pip install tasteless-media-vault
               </div>
               <div className="text-zinc-300">
                 Downloading packages... <span className="text-green-400">[DONE]</span><br/>
-                Initializing collaboration request...
+                Initializing broadcast to creative ops...
               </div>
 
               <div className="grid gap-4 pt-4">
@@ -401,9 +400,9 @@ export default function App({ onNavigateToComics = () => {} }) {
                 <div className="flex flex-col">
                   <label className="text-xs text-zinc-500 uppercase mb-1">Select Parameters (Service)</label>
                   <div className="grid grid-cols-3 gap-2 text-xs">
-                     <button className="border border-zinc-700 p-2 hover:bg-lime-400 hover:text-black hover:border-lime-400 transition-colors text-zinc-400">--images</button>
-                     <button className="border border-zinc-700 p-2 hover:bg-lime-400 hover:text-black hover:border-lime-400 transition-colors text-zinc-400">--video</button>
-                     <button className="border border-lime-400/50 text-lime-400 p-2 bg-lime-400/10">--custom-model</button>
+                     <button className="border border-zinc-700 p-2 hover:bg-lime-400 hover:text-black hover:border-lime-400 transition-colors text-zinc-400">--campaign-lab</button>
+                     <button className="border border-zinc-700 p-2 hover:bg-lime-400 hover:text-black hover:border-lime-400 transition-colors text-zinc-400">--motion</button>
+                     <button className="border border-lime-400/50 text-lime-400 p-2 bg-lime-400/10">--model-ops</button>
                   </div>
                 </div>
               </div>
