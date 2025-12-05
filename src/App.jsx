@@ -203,15 +203,24 @@ export default function App({ onNavigateToComics = () => {} }) {
 
         {/* Hero Stats Grid */}
         <div className="grid grid-cols-2 md:grid-cols-4 border-t border-zinc-800">
-          <StatCard label="Images Generated" value="1.2M+" trend="↑ Weekly" icon={Aperture} />
-          <StatCard label="Model Accuracy" value="99.4%" trend="v4.0 Beta" icon={BrainCircuit} />
-          <StatCard label="Render Time" value="<8s" trend="Real-time" icon={Zap} />
-          <StatCard label="Styles Trained" value="450+" trend="Library" icon={Code2} />
+          <StatCard label="Generated composites" value="18,260" trend="↑ weekly" icon={Aperture} />
+          <StatCard label="ML agents" value="3" trend="Live" icon={BrainCircuit} />
+          <StatCard label="SNR" value="38.2" trend="Clean" icon={Zap} />
+          <StatCard label="Render nodes" value="14 / 20" trend="Online" icon={Code2} />
         </div>
       </header>
 
       {/* --- Marquee --- */}
-      <Marquee items={['Stable Diffusion', 'Midjourney v6', 'Runway Gen-2', 'Llama 3', 'LoRA Training', 'Synthetic Video', 'ControlNet']} />
+      <Marquee items={[
+        'ChatGPT-4.1',
+        'Gemini Ultra',
+        'Midjourney v6',
+        'Runway G3',
+        'Stable Diffusion',
+        'Claude 3.5 Sonnet',
+        'PyTorch',
+        'CV'
+      ]} />
 
       {/* --- Services (The Protocol) --- */}
       <section id="models" className="border-t border-zinc-800 bg-zinc-950 relative">
@@ -226,21 +235,21 @@ export default function App({ onNavigateToComics = () => {} }) {
             <div className="flex-1">
               <ServiceRow 
                 number="01" 
-                title="Generative Imaging" 
-                desc="We prompt engineering to the limit. Photorealistic product shots, abstract architectural concepts, or stylized character art—generated in seconds, not days."
-                tags={['Midjourney', 'Flux', 'DALL-E 3', 'Upscaling']}
+                title="Prompt packs & A.I app guides"
+                desc="Tutorials, YouTube ready scripts, & image guide packs for production use."
+                tags={['Prompt testing', 'Prompt dashboard']}
               />
-              <ServiceRow 
-                number="02" 
-                title="Synthetic Video" 
-                desc="Text-to-Video and Image-to-Video workflows that defy physics. We create commercials, social clips, and music visualizations without a single camera lens."
-                tags={['Runway Gen-3', 'Pika Labs', 'Sora', 'Deforum']}
+              <ServiceRow
+                number="02"
+                title="Synthetic video"
+                desc="Video ads, rotoscope, animatic fidelity passes for broadcast delivery."
+                tags={['SD Video', 'Runway', 'Gankeyframe']}
               />
-              <ServiceRow 
-                number="03" 
-                title="Custom Model Training" 
-                desc="Your brand's aesthetic, codified. We train custom LoRAs and fine-tune checkpoints on your specific products and style guidelines."
-                tags={['Dreambooth', 'Kohya_ss', 'Style Transfer', 'IP-Adapter']}
+              <ServiceRow
+                number="03"
+                title="Media buying & performance intelligence"
+                desc="Performance optimized ad buying plus brand safety & uplift."
+                tags={['Meta', 'Google', 'Amazon', 'LinkedIn']}
               />
             </div>
          </div>
@@ -260,12 +269,12 @@ export default function App({ onNavigateToComics = () => {} }) {
 
         <div className="grid lg:grid-cols-2 gap-8">
           {[
-            { client: "CYBER VOGUE", metric: "100% AI", desc: "Full editorial shoot generated via Midjourney v6.", color: "bg-fuchsia-900" },
-            { client: "NEON BEVERAGE", metric: "TV Spot", desc: "AI-generated commercial using Runway Gen-2.", color: "bg-blue-900" },
-            { client: "ARCHI-VIZ", metric: "200 Concepts", desc: "Rapid architectural prototyping for urban planning.", color: "bg-emerald-900" },
-            { client: "MUSIC VIDEO", metric: "Frame Interpolation", desc: "Stable Diffusion Deforum animation for indie artist.", color: "bg-orange-900" }
+            { client: "PAGAN REBORN", metric: "Series concept", desc: "Style-tested mythic worlds generated for premium print & digital.", color: "bg-fuchsia-900" },
+            { client: "WAR OF FAITH", metric: "Coming soon", desc: "New arc arriving in the synthetic archive feed.", color: "bg-blue-900" },
+            { client: "EMPIRE OF STEAM", metric: "Film pitch", desc: "Hero frames and key art for our proprietary IP slate.", color: "bg-emerald-900" },
+            { client: "HYPERLINKED", metric: "Archival", desc: "Expanded catalog of sequential art launching shortly.", color: "bg-orange-900" }
           ].map((item, i) => (
-            <div 
+            <div
               key={i}
               className="group relative h-[400px] md:h-[500px] border border-zinc-800 overflow-hidden cursor-pointer"
               onMouseEnter={() => setHoveredCase(i)}
@@ -306,7 +315,7 @@ export default function App({ onNavigateToComics = () => {} }) {
       <section id="comics" className="border-y border-zinc-800 bg-zinc-950 py-20 px-6 md:px-12">
         <div className="max-w-6xl mx-auto grid lg:grid-cols-[1.2fr,1fr] gap-10 items-center">
           <div>
-            <p className="font-mono text-xs text-lime-400 uppercase tracking-[0.3em] mb-3">Cloudflare ready</p>
+            <p className="font-mono text-xs text-lime-400 uppercase tracking-[0.3em] mb-3">Edge ready</p>
             <h2 className="text-4xl md:text-5xl font-black tracking-tight text-white mb-4">Comics Exchange</h2>
             <p className="text-lg text-zinc-400 leading-relaxed mb-6">
               Route your readers to a dedicated comics surface that ships with the build. Clicking through opens a full-page
