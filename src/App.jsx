@@ -606,11 +606,32 @@ const Home = ({ onNavigateToComics = () => {} }) => {
 // --- App Root ---
 
 export default function App() {
-  const [currentPage, setCurrentPage] = useState('home');
+  const getPageFromPath = () => (window.location.pathname.startsWith('/comic') ? 'comics' : 'home');
+  const [currentPage, setCurrentPage] = useState(getPageFromPath());
+
+  useEffect(() => {
+    const handlePopState = () => setCurrentPage(getPageFromPath());
+    window.addEventListener('popstate', handlePopState);
+    return () => window.removeEventListener('popstate', handlePopState);
+  }, []);
+
+  const navigateToHome = () => {
+    if (window.location.pathname !== '/') {
+      window.history.pushState({}, '', '/');
+    }
+    setCurrentPage('home');
+  };
+
+  const navigateToComics = () => {
+    if (!window.location.pathname.startsWith('/comic')) {
+      window.history.pushState({}, '', '/comic');
+    }
+    setCurrentPage('comics');
+  };
 
   if (currentPage === 'comics') {
-    return <ComicsPage onBack={() => setCurrentPage('home')} />;
+    return <ComicsPage onBack={navigateToHome} />;
   }
 
-  return <Home onNavigateToComics={() => setCurrentPage('comics')} />;
+  return <Home onNavigateToComics={navigateToComics} />;
 }
